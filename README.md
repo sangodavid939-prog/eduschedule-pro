@@ -74,18 +74,20 @@ eduschedule_pro/
 │       │   └── RapportsPage.jsx
 │       └── App.jsx            # Routing principal
 │
-└── backend/                   # API REST PHP
+└──└── backend/                   # API REST PHP
     ├── api/
-    │   ├── auth.php           # Authentification JWT
-    │   ├── emploi_temps.php   # Emploi du temps & CRUD
-    │   ├── pointages.php      # Pointage QR Code
-    │   ├── cahiers.php        # Cahiers de texte
-    │   └── vacations.php      # Fiches de vacation
+    │   ├── auth.php
+    │   ├── emploi_temps.php
+    │   ├── pointages.php
+    │   ├── cahiers.php
+    │   └── vacations.php
     ├── config/
-    │   ├── database.php       # Connexion MySQL
-    │   └── constants.php      # Constantes JWT
+    │   ├── database.php
+    │   └── constants.php
+    ├── database/
+    │   └── eduschedule_pro.sql  # Script SQL complet
     └── middleware/
-        └── auth.php           # Middleware JWT
+        └── auth.php
 ```
 
 ---
