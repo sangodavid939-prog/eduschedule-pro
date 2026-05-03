@@ -18,6 +18,7 @@ import SallesPage from './pages/SallesPage';
 import RapportsPage from './pages/RapportsPage';
 import PointageManuelPage from './pages/PointageManuelPage';
 import EtudiantsPage from './pages/EtudiantsPage'; 
+import UtilisateursPage from './pages/UtilisateursPage';
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
             <Route path="admin/salles"          element={<PrivateRoute roles={['administrateur']}><SallesPage /></PrivateRoute>} />
             <Route path="rapports"              element={<PrivateRoute roles={['administrateur','surveillant']}><RapportsPage /></PrivateRoute>} />
             <Route path="pointage-manuel"       element={<PrivateRoute roles={['surveillant','administrateur']}><PointageManuelPage /></PrivateRoute>} />
+            <Route path="admin/utilisateurs" element={<PrivateRoute roles={['administrateur']}><UtilisateursPage /></PrivateRoute>} />
           </Route>
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
