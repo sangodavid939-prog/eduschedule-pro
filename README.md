@@ -12,9 +12,9 @@ Encadrant : **Dr Wend-Panga Cédric BÉRÉ**
 
 | Nom | Rôle |
 |-----|------|
-| **SANGO Abdine David** | Développeur Full-Stack — Module Emploi du temps & Authentification & Tableau de bord |
+| **SANGO Abdine David** | Développeur Full-Stack — Module Emploi du temps & Authentification & Tableau de bord|
 | **HIEN Mwin Jessica** | Développeuse Full-Stack — Module Cahier de texte & Pointage QR |
-| **MASBE Fidelia** | Développeuse Full-Stack — Module Vacation |
+| **MASBE Fidelia** | Développeuse Full-Stack — Module Vacation|
 
 ---
 
@@ -32,15 +32,31 @@ Encadrant : **Dr Wend-Panga Cédric BÉRÉ**
 
 ## 🛠️ Technologies utilisées
 
-| Couche | Technologie |
-|--------|-------------|
-| Frontend | React.js 18, Bootstrap 5, SheetJS |
-| Backend | PHP 8.1, API REST |
-| Base de données | MySQL 8.0 |
-| Authentification | JWT (JSON Web Token) |
-| Signatures | Signature Pad JS |
-| QR Code | jsQR (scan), api.qrserver.com (génération) |
-| Serveur local | WampServer 64 |
+### Frontend
+| Package | Version | Utilisation |
+|---------|---------|-------------|
+| `react` | 18.2.0 | Framework principal |
+| `react-dom` | 18.2.0 | Rendu DOM |
+| `react-router-dom` | 7.14.1 | Navigation entre pages |
+| `bootstrap` | 5.3.8 | Design et mise en page |
+| `react-bootstrap` | 2.10.10 | Composants Bootstrap pour React |
+| `axios` | 1.15.1 | Requêtes HTTP vers l'API |
+| `chart.js` | 4.5.1 | Graphiques du tableau de bord |
+| `react-chartjs-2` | 5.3.1 | Intégration Chart.js dans React |
+| `recharts` | 3.8.1 | Graphiques alternatifs |
+| `jspdf` | 4.2.1 | Génération de fichiers PDF |
+| `jspdf-autotable` | 5.0.7 | Tableaux PDF automatiques |
+| `jsqr` | 1.4.0 | Scan QR Code via caméra |
+| `signature_pad` | 5.1.3 | Signatures numériques canvas |
+| `xlsx` | 0.18.5 | Export Excel des vacations |
+
+### Backend
+| Technologie | Version | Utilisation |
+|-------------|---------|-------------|
+| PHP | 8.1 | API REST |
+| MySQL | 8.0 | Base de données |
+| JWT | — | Authentification sécurisée |
+| WampServer | 3.3.x | Serveur local (Apache + PHP + MySQL) |
 
 ---
 
@@ -48,15 +64,17 @@ Encadrant : **Dr Wend-Panga Cédric BÉRÉ**
 
 ```
 eduschedule_pro/
+├── README.md
 ├── frontend/                  # Application React
 │   ├── public/
+│   ├── .env                   # GENERATE_SOURCEMAP=false
 │   └── src/
-│       ├── components/        # Composants réutilisables
+│       ├── components/
 │       │   ├── PrivateRoute.jsx
 │       │   └── CreneauForm.jsx
 │       ├── context/
-│       │   └── AuthContext.jsx  # Gestion de l'authentification
-│       ├── pages/             # Pages de l'application
+│       │   └── AuthContext.jsx
+│       ├── pages/
 │       │   ├── LoginPage.jsx
 │       │   ├── DashboardAdmin.jsx
 │       │   ├── DashboardEnseignant.jsx
@@ -69,12 +87,13 @@ eduschedule_pro/
 │       │   ├── ClassesPage.jsx
 │       │   ├── EnseignantsPage.jsx
 │       │   ├── EtudiantsPage.jsx
+│       │   ├── UtilisateursPage.jsx
 │       │   ├── MatieresPage.jsx
 │       │   ├── SallesPage.jsx
 │       │   └── RapportsPage.jsx
-│       └── App.jsx            # Routing principal
+│       └── App.jsx
 │
-└──└── backend/                   # API REST PHP
+└── backend/                   # API REST PHP
     ├── api/
     │   ├── auth.php
     │   ├── emploi_temps.php
@@ -85,7 +104,7 @@ eduschedule_pro/
     │   ├── database.php
     │   └── constants.php
     ├── database/
-    │   └── eduschedule_pro.sql  # Script SQL complet
+    │   └── eduschedule_pro.sql  # ← Script SQL complet à importer
     └── middleware/
         └── auth.php
 ```
@@ -107,30 +126,75 @@ eduschedule_pro/
 
 ## 🚀 Installation et lancement
 
+### ⚠️ Important — Lire avant de commencer
+
+> Le projet doit **obligatoirement** être placé dans le dossier :
+> ```
+> C:\wamp64\www\eduschedule_pro\
+> ```
+> Si vous changez le nom du dossier ou le chemin, le proxy React ne fonctionnera pas.
+
+---
+
 ### Prérequis
 
-- [WampServer](https://www.wampserver.com/) 3.x (PHP 8.1 + MySQL 8.0)
-- [Node.js](https://nodejs.org/) 18+ et npm
-- Navigateur moderne (Chrome, Firefox, Edge)
+| Logiciel | Version | Lien de téléchargement |
+|----------|---------|----------------------|
+| WampServer | 3.3.x 64-bit | [wampserver.com](https://www.wampserver.com/) |
+| Node.js | 18.x ou 20.x | [nodejs.org](https://nodejs.org/) |
+| Git | Dernière version | [git-scm.com](https://git-scm.com/) |
+| VS Code | Dernière version | [code.visualstudio.com](https://code.visualstudio.com/) |
+| Navigateur | Chrome ou Firefox | — |
 
-### Étape 1 — Cloner / copier le projet
+---
+
+### Étape 1 — Cloner le projet
 
 ```bash
-# Copier le dossier dans le répertoire WampServer
-C:\wamp64\www\eduschedule_pro\
+cd C:\wamp64\www
+git clone https://github.com/sangodavid939-prog/eduschedule-pro.git eduschedule_pro
 ```
 
-### Étape 2 — Base de données
+> ⚠️ Le dossier doit s'appeler exactement `eduschedule_pro`
 
-1. Démarrer WampServer
-2. Ouvrir **phpMyAdmin** → `http://localhost/phpmyadmin`
-3. Créer une base de données nommée `eduschedule_pro`
-4. Importer le fichier SQL :
-   ```
-   backend/database/eduschedule_pro.sql
-   ```
+---
 
-### Étape 3 — Configuration backend
+### Étape 2 — Démarrer WampServer
+
+1. Lancer **WampServer** (icône dans la barre des tâches)
+2. Attendre que l'icône devienne **verte** 🟢
+3. Vérifier que **Apache** et **MySQL** sont démarrés
+
+**Activer les extensions PHP requises :**
+- Clic gauche sur l'icône WampServer
+- **PHP** → **Extensions PHP**
+- Vérifier que ces extensions sont cochées :
+  - `php_pdo_mysql`
+  - `php_mbstring`
+  - `php_json`
+
+---
+
+### Étape 3 — Base de données
+
+1. Ouvrir **phpMyAdmin** → `http://localhost/phpmyadmin`
+   - Login : `root`
+   - Mot de passe : *(laisser vide)*
+2. Créer une base de données :
+   - Cliquer **"Nouvelle base de données"**
+   - Nom : `eduschedule_pro`
+   - Interclassement : `utf8mb4_general_ci`
+   - Cliquer **Créer**
+3. Importer le script SQL :
+   - Cliquer sur `eduschedule_pro`
+   - Onglet **Importer**
+   - Cliquer **Choisir un fichier**
+   - Sélectionner : `backend/database/eduschedule_pro.sql`
+   - Cliquer **Exécuter**
+
+---
+
+### Étape 4 — Configuration backend
 
 Vérifier le fichier `backend/config/database.php` :
 
@@ -138,39 +202,68 @@ Vérifier le fichier `backend/config/database.php` :
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'eduschedule_pro');
 define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_PASS', '');  // Laisser vide par défaut avec WampServer
 ```
 
 Vérifier le fichier `backend/config/constants.php` :
 
 ```php
-define('JWT_SECRET', 'votre_secret_jwt');
-define('JWT_EXPIRE', 86400); // 24 heures
+define('JWT_SECRET', 'eduschedule_secret_2026');
+define('JWT_EXPIRE', 86400);
 define('CORS_ORIGIN', 'http://localhost:3000');
 ```
 
-### Étape 4 — Frontend
+---
+
+### Étape 5 — Frontend
+
+Ouvrir un terminal dans le dossier `frontend` :
 
 ```bash
 cd C:\wamp64\www\eduschedule_pro\frontend
+
+# Installer toutes les dépendances
 npm install
+
+# Lancer l'application
 npm start
 ```
 
-L'application sera disponible sur **http://localhost:3000**
+> L'application s'ouvre automatiquement sur **http://localhost:3000**
+
+---
+
+### Étape 6 — Fichier .env (supprimer les warnings)
+
+Créer un fichier `.env` dans `frontend/` avec ce contenu :
+
+```
+GENERATE_SOURCEMAP=false
+```
+
+---
+
+### ✅ Vérification — L'application fonctionne si :
+
+- La page de connexion s'affiche sur `http://localhost:3000`
+- WampServer est vert 🟢
+- La base de données est importée
+- `npm start` tourne dans le terminal
 
 ---
 
 ## 🔑 Comptes de démonstration
 
-| Rôle | Email | Mot de passe |
-|------|-------|--------------|
-| Administrateur | admin@eduschedule.bf | Admin1234! |
-| Enseignant | c.bere@isge.bf | Admin1234! |
-| Délégué | delegue.l1@eduschedule.bf | Admin1234! |
-| Surveillant | surveillant@eduschedule.bf | Admin1234! |
-| Comptable | comptable@eduschedule.bf | Admin1234! |
-| Étudiant | etudiant@eduschedule.bf | Admin1234! |
+> Tous les comptes utilisent le même mot de passe : **`Admin1234!`**
+
+| Rôle | Email |
+|------|-------|
+| Administrateur | admin@eduschedule.bf |
+| Enseignant | c.bere@isge.bf |
+| Délégué | delegue.l1@eduschedule.bf |
+| Surveillant | surveillant@eduschedule.bf |
+| Comptable | comptable@eduschedule.bf |
+| Étudiant | etudiant@eduschedule.bf |
 
 ---
 
@@ -184,6 +277,7 @@ L'application sera disponible sur **http://localhost:3000**
 - ✅ Filtres dynamiques (enseignant, salle, matière)
 - ✅ Gestion des jours fériés (Burkina Faso 2026)
 - ✅ Génération de QR Code par séance
+- ✅ Navigation semaine précédente / suivante
 
 ### Module 2 — Pointage QR Code
 - ✅ Génération de QR Code sécurisé avec token
@@ -204,7 +298,7 @@ L'application sera disponible sur **http://localhost:3000**
 - ✅ Chaîne de validation en 4 étapes
 - ✅ Signatures numériques enseignant + surveillant
 - ✅ Export PDF de la fiche comptable
-- ✅ **Export Excel** (2 feuilles : récapitulatif + stats)
+- ✅ Export Excel (récapitulatif + stats par enseignant)
 
 ### Module 5 — Tableau de bord
 - ✅ Graphiques évolution des séances par semaine
@@ -243,7 +337,7 @@ L'application sera disponible sur **http://localhost:3000**
 
 ---
 
-## 📁 API Endpoints
+## 📁 API Endpoints principaux
 
 | Méthode | Endpoint | Description |
 |---------|----------|-------------|
@@ -258,13 +352,32 @@ L'application sera disponible sur **http://localhost:3000**
 
 ---
 
+## ❓ Problèmes fréquents
+
+**L'application ne se lance pas :**
+- Vérifier que WampServer est vert 🟢
+- Vérifier que le dossier s'appelle exactement `eduschedule_pro`
+
+**Erreur de connexion à la base de données :**
+- Vérifier que MySQL est démarré dans WampServer
+- Vérifier que la base `eduschedule_pro` existe dans phpMyAdmin
+- Vérifier les identifiants dans `backend/config/database.php`
+
+**Page blanche ou erreur 401 :**
+- Vérifier que `npm start` tourne dans le terminal
+- Vider le cache du navigateur (Ctrl+Shift+R)
+
+**npm install échoue :**
+- Vérifier la version de Node.js : `node --version` (doit être 18.x ou 20.x)
+- Supprimer le dossier `node_modules` et relancer `npm install`
+
+---
+
 ## 📞 Contact
 
-Pour toute question relative au projet :
-
 - **SANGO Abdine David** — sangodavid939@gmail.com
-- **HIEN Mwin Jessica** — jessicahien35@gmail.com
-- **MASBE Fidelia** — masbefidelia3@gmail.com
+- **HIEN Mwin Jessica** —  jessicahien35@gmail.com
+- **MASBE Fidelia —**   —  masbefidelia3@gmail.com
 
 ---
 
