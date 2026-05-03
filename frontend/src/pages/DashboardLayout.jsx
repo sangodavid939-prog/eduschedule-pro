@@ -13,7 +13,7 @@ const NAV = {
     { label: "Étudiants",        path: "/admin/etudiants",      icone: "🎒" }, 
     { label: "Matieres",         path: "/admin/matieres",       icone: "📖" },
     { label: "Salles",           path: "/admin/salles",         icone: "🏛" },
-  { label: "Utilisateurs",       path: "/admin/utilisateurs",   icone: "👥" }
+    { label: "Utilisateurs",       path: "/admin/utilisateurs", icone: "👥" }
   ],
   enseignant: [
     { label: "Tableau de bord",  path: "/dashboard/enseignant", icone: "📊" },
