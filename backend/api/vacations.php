@@ -388,18 +388,20 @@ if ($method === 'GET' && $action === 'avancement_programmes') {
         SELECT 
             m.libelle AS matiere,
             cl.libelle AS classe,
+            COUNT(DISTINCT cr.id) AS nb_seances_planifiees,
+            COUNT(DISTINCT ct.id) AS nb_seances_realisees,
             COUNT(ct.id) AS nb_seances,
-            AVG(CASE 
-                WHEN ct.niveau_avancement REGEXP '[0-9]+'
-                THEN CAST(REGEXP_SUBSTR(ct.niveau_avancement, '[0-9]+') AS UNSIGNED)
-                ELSE 0 
-            END) AS avancement_moyen
-        FROM cahiers_texte ct
-        JOIN creneaux cr      ON ct.id_creneau = cr.id
+            CASE 
+                WHEN COUNT(DISTINCT cr.id) > 0
+                THEN ROUND((COUNT(DISTINCT ct.id) / COUNT(DISTINCT cr.id)) * 100)
+                ELSE 0
+            END AS avancement_moyen
+        FROM creneaux cr
         JOIN emploi_temps et  ON cr.id_emploi_temps = et.id
         JOIN matieres m       ON cr.id_matiere = m.id
         JOIN classes cl       ON et.id_classe = cl.id
-        WHERE ct.statut = 'cloture'
+        LEFT JOIN cahiers_texte ct ON ct.id_creneau = cr.id AND ct.statut = 'cloture'
+        WHERE cr.statut != 'annule'
         GROUP BY m.id, cl.id
         ORDER BY cl.libelle, m.libelle
     ");
