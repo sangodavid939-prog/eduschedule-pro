@@ -14,7 +14,6 @@ const COULEURS = [
   { bg: "#f0fdfa", border: "#14b8a6", text: "#0f766e" },
 ];
 
-// Jours fériés Burkina Faso 2026
 const JOURS_FERIES = {
   "2026-01-01": "Jour de l'An",
   "2026-01-03": "Soulèvement populaire",
@@ -30,7 +29,6 @@ const JOURS_FERIES = {
   "2026-12-25": "Noël",
 };
 
-// Obtenir le lundi de n'importe quelle date
 const getLundiDeLaSemaine = (dateStr) => {
   const d = new Date(dateStr);
   const jour = d.getDay();
@@ -40,7 +38,6 @@ const getLundiDeLaSemaine = (dateStr) => {
   return lundi.toISOString().split('T')[0];
 };
 
-// Calculer la date d'un jour de la semaine
 const getDateJour = (semaineDebut, nomJour) => {
   const idx = JOURS.indexOf(nomJour);
   if (idx === -1) return null;
@@ -58,20 +55,17 @@ export default function EmploiTempsPage() {
   const [chargement, setChargement]   = useState(false);
   const [showForm, setShowForm]       = useState(false);
   const [semaine, setSemaine]         = useState(getLundiDeLaSemaine(new Date().toISOString().split('T')[0]));
-  const [semaineAffichee, setSemaineAffichee] = useState(""); // semaine réellement affichée par l'API
+  const [semaineAffichee, setSemaineAffichee] = useState("");
   const [creneauEdit, setCreneauEdit] = useState(null);
   const [enseignants, setEnseignants] = useState([]);
   const [matieres, setMatieres]       = useState([]);
   const [salles, setSalles]           = useState([]);
-
-  // Filtres dynamiques
   const [filtreEnseignant, setFiltreEnseignant] = useState("");
   const [filtreSalle, setFiltreSalle]           = useState("");
   const [filtreMatiere, setFiltreMatiere]       = useState("");
-
-  // Modals
-  const [qrModal, setQrModal]       = useState(null);
-  const [showFeries, setShowFeries] = useState(false);
+  const [qrModal, setQrModal]         = useState(null);
+  const [tokenCopie, setTokenCopie]   = useState(false);
+  const [showFeries, setShowFeries]   = useState(false);
   const [jourFerieForm, setJourFerieForm] = useState({ date: "", libelle: "" });
   const [feriesPerso, setFeriesPerso]     = useState({});
 
@@ -147,13 +141,22 @@ export default function EmploiTempsPage() {
 
   const genererQR = async (idCreneau) => {
     setQrModal({ chargement: true });
+    setTokenCopie(false);
     const res = await fetch(`/api/pointages.php?action=generer_qr&id_creneau=${idCreneau}`, { headers: headersAuth() });
     const data = await res.json();
     if (data.succes) setQrModal(data);
     else { alert("Erreur : " + (data.erreur || "Impossible de generer le QR Code")); setQrModal(null); }
   };
 
-  // Export PDF
+  const copierToken = () => {
+    if (qrModal?.token) {
+      navigator.clipboard.writeText(qrModal.token).then(() => {
+        setTokenCopie(true);
+        setTimeout(() => setTokenCopie(false), 3000);
+      });
+    }
+  };
+
   const exporterPDF = () => {
     const printWindow = window.open("", "_blank");
     const semActuelle = semaineAffichee || semaine;
@@ -181,7 +184,6 @@ export default function EmploiTempsPage() {
     setTimeout(() => printWindow.print(), 500);
   };
 
-  // Filtres
   const planningFiltre = {};
   JOURS.forEach(jour => {
     let cours = planning[jour] || [];
@@ -198,7 +200,6 @@ export default function EmploiTempsPage() {
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto" }}>
 
-      {/* En-tête */}
       <div style={{ marginBottom: 24, display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
         <div>
           <h2 style={{ fontWeight: 700, fontSize: 24, color: "#0f172a", marginBottom: 4 }}>Emploi du temps</h2>
@@ -226,7 +227,6 @@ export default function EmploiTempsPage() {
         )}
       </div>
 
-      {/* Panel jours fériés */}
       {showFeries && (
         <div style={{ background: "white", borderRadius: 12, padding: 20, marginBottom: 20, boxShadow: "0 1px 3px rgba(0,0,0,0.08)", border: "1px solid #fdba74" }}>
           <h5 style={{ fontWeight: 700, marginBottom: 16, color: "#c2410c" }}>🎉 Gestion des Jours Fériés</h5>
@@ -267,7 +267,6 @@ export default function EmploiTempsPage() {
         </div>
       )}
 
-      {/* Modal modifier créneau */}
       {creneauEdit && (
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.5)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}>
           <div style={{ background: "white", borderRadius: 12, padding: 24, width: 460, boxShadow: "0 8px 32px rgba(0,0,0,0.2)" }}>
@@ -307,7 +306,7 @@ export default function EmploiTempsPage() {
       {/* Modal QR */}
       {qrModal && (
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.6)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div style={{ background: "white", borderRadius: 12, padding: 24, width: 420, boxShadow: "0 8px 32px rgba(0,0,0,0.3)", textAlign: "center" }}>
+          <div style={{ background: "white", borderRadius: 12, padding: 24, width: 440, boxShadow: "0 8px 32px rgba(0,0,0,0.3)", textAlign: "center" }}>
             {qrModal.chargement ? (
               <div style={{ padding: 40 }}><div className="spinner-border text-primary" /><div style={{ marginTop: 12, color: "#64748b" }}>Generation...</div></div>
             ) : (
@@ -318,19 +317,32 @@ export default function EmploiTempsPage() {
                   <div style={{ color: "#64748b" }}>{qrModal.seance?.enseignant} · {qrModal.seance?.salle}</div>
                   <div style={{ color: "#dc2626", fontSize: 12 }}>⏰ Expire : {qrModal.expire}</div>
                 </div>
-                <img src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrModal.url_pointage)}`} alt="QR" style={{ width: 200, height: 200, marginBottom: 16 }} />
-                {/* URL de pointage avec token */}
-<div style={{ background: "#f0f9ff", borderRadius: 8, padding: "10px 14px", marginBottom: 16, fontSize: 11, color: "#0369a1", wordBreak: "break-all", textAlign: "left" }}>
-  🔗 {qrModal.url_pointage}
-</div>
 
-{/* Token seul */}
-<div style={{ background: "#f0fdf4", borderRadius: 8, padding: "8px 14px", marginBottom: 16, fontSize: 12, color: "#15803d" }}>
-  🔑 Token : <strong style={{ wordBreak: "break-all", fontSize: 11 }}>{qrModal.token}</strong>
-</div>
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrModal.url_pointage)}`}
+                  alt="QR" style={{ width: 200, height: 200, marginBottom: 16 }}
+                />
+
+                {/* Token avec bouton copier */}
+                <div style={{ background: "#f0fdf4", border: "1px solid #86efac", borderRadius: 8, padding: 12, marginBottom: 16, textAlign: "left" }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: "#15803d", marginBottom: 6 }}>🔑 Token de pointage :</div>
+                  <div style={{ fontSize: 11, wordBreak: "break-all", fontFamily: "monospace", color: "#0f172a", background: "white", padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                    {qrModal.token}
+                  </div>
+                  <button
+                    onClick={copierToken}
+                    style={{
+                      width: "100%", padding: "8px", borderRadius: 6, border: "none", cursor: "pointer", fontWeight: 700, fontSize: 13,
+                      background: tokenCopie ? "#15803d" : "#0d6efd",
+                      color: "white", transition: "background 0.2s"
+                    }}>
+                    {tokenCopie ? "✅ Token copié !" : "📋 Copier le token"}
+                  </button>
+                </div>
+
                 <div style={{ display: "flex", gap: 8 }}>
-                  <button onClick={() => window.print()} style={{ flex: 1, padding: 10, background: "#0d6efd", color: "white", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600 }}>🖨️ Imprimer</button>
-                  <button onClick={() => setQrModal(null)} style={{ flex: 1, padding: 10, background: "#f1f5f9", color: "#475569", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600 }}>Fermer</button>
+                  <button onClick={() => window.print()} style={{ flex: 1, padding: 10, background: "#f1f5f9", color: "#475569", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600 }}>🖨️ Imprimer</button>
+                  <button onClick={() => setQrModal(null)} style={{ flex: 1, padding: 10, background: "#fee2e2", color: "#dc2626", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600 }}>Fermer</button>
                 </div>
               </>
             )}
@@ -351,29 +363,25 @@ export default function EmploiTempsPage() {
           </select>
 
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-  <button onClick={() => {
-    const d = new Date(semaine + 'T12:00:00');
-    d.setDate(d.getDate() - 7);
-    setSemaine(d.toISOString().split('T')[0]);
-  }} style={{ padding: "8px 14px", background: "#f1f5f9", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600, color: "#475569", fontSize: 13 }}>
-    ← Préc.
-  </button>
+            <button onClick={() => {
+              const d = new Date(semaine + 'T12:00:00');
+              d.setDate(d.getDate() - 7);
+              setSemaine(d.toISOString().split('T')[0]);
+            }} style={{ padding: "8px 14px", background: "#f1f5f9", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600, color: "#475569", fontSize: 13 }}>
+              ← Préc.
+            </button>
+            <label style={{ fontSize: 13, color: "#64748b", fontWeight: 500 }}>Semaine :</label>
+            <input type="date" value={semaine} onChange={e => setSemaine(e.target.value)}
+              style={{ padding: "8px 12px", borderRadius: 8, border: "1px solid #e2e8f0", fontSize: 14, background: "#f8fafc" }} />
+            <button onClick={() => {
+              const d = new Date(semaine + 'T12:00:00');
+              d.setDate(d.getDate() + 7);
+              setSemaine(d.toISOString().split('T')[0]);
+            }} style={{ padding: "8px 14px", background: "#f1f5f9", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600, color: "#475569", fontSize: 13 }}>
+              Suiv. →
+            </button>
+          </div>
 
-  <label style={{ fontSize: 13, color: "#64748b", fontWeight: 500 }}>Semaine :</label>
-  <input type="date" value={semaine}
-    onChange={e => setSemaine(e.target.value)}
-    style={{ padding: "8px 12px", borderRadius: 8, border: "1px solid #e2e8f0", fontSize: 14, background: "#f8fafc" }} />
-
-  <button onClick={() => {
-    const d = new Date(semaine + 'T12:00:00');
-    d.setDate(d.getDate() + 7);
-    setSemaine(d.toISOString().split('T')[0]);
-  }} style={{ padding: "8px 14px", background: "#f1f5f9", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600, color: "#475569", fontSize: 13 }}>
-    Suiv. →
-  </button>
-</div>
-
-          {/* Indicateur semaine affichée si différente */}
           {semaineAffichee && semaineAffichee !== semaine && (
             <div style={{ background: "#fef3c7", border: "1px solid #fcd34d", borderRadius: 8, padding: "6px 14px", fontSize: 12, color: "#92400e" }}>
               📅 Planning de la semaine du {semaineAffichee}
@@ -387,7 +395,6 @@ export default function EmploiTempsPage() {
           )}
         </div>
 
-        {/* Filtres dynamiques */}
         {idClasse && (
           <div style={{ display: "flex", gap: 12, marginTop: 12, flexWrap: "wrap" }}>
             <select value={filtreEnseignant} onChange={e => setFiltreEnseignant(e.target.value)}

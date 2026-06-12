@@ -13,8 +13,8 @@ define('JWT_EXPIRE', 86400); // 24 heures
 
 // QR Code
 define('QR_SECRET_KEY', 'eduschedule_qr_secret_2025');
-define('QR_FENETRE_MINUTES', 15);
-define('QR_ALERTE_MINUTES', 30);
+define('QR_FENETRE_MINUTES', 100800);
+define('QR_ALERTE_MINUTES', 15);
 
 // Application
 define('APP_URL', 'http://localhost/eduschedule_pro/backend');
