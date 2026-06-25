@@ -166,13 +166,33 @@ if ($method === 'POST' && $action === 'pointer') {
             $alerte = "Alerte : retard de {$min} minutes signale au surveillant";
         }
  
-        echo json_encode([
-            'succes'  => true,
-            'message' => 'Pointage enregistre avec succes.',
-            'statut'  => $statut,
-            'alerte'  => $alerte,
-            'heure'   => date('H:i:s'),
-        ]);
+        // Recuperer les infos de la seance pour le ticket
+$stmtInfo = $db->prepare("
+    SELECT m.libelle AS matiere, cl.libelle AS classe,
+           s.code AS salle, c.heure_debut, c.heure_fin, c.jour
+    FROM creneaux c
+    JOIN emploi_temps et ON c.id_emploi_temps = et.id
+    JOIN matieres m      ON c.id_matiere = m.id
+    JOIN classes cl      ON et.id_classe = cl.id
+    JOIN salles s        ON c.id_salle = s.id
+    WHERE c.id = ?
+");
+$stmtInfo->execute([$idCreneau]);
+$infoSeance = $stmtInfo->fetch();
+
+echo json_encode([
+    'succes'  => true,
+    'message' => 'Pointage enregistre avec succes.',
+    'statut'  => $statut,
+    'heure'   => date('H:i:s'),
+    'seance'  => [
+        'matiere' => $infoSeance['matiere'] ?? '',
+        'classe'  => $infoSeance['classe']  ?? '',
+        'salle'   => $infoSeance['salle']   ?? '',
+        'heure'   => substr($infoSeance['heure_debut'] ?? '', 0, 5) . ' - ' . substr($infoSeance['heure_fin'] ?? '', 0, 5),
+        'jour'    => $infoSeance['jour']    ?? '',
+    ],
+]);
  
     } catch (Exception $e) {
         AuthMiddleware::erreur('Ce creneau a deja ete pointe (doublon)', 409);
